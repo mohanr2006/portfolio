@@ -341,7 +341,6 @@ nav {
   border-radius: 50%;
   background: var(--gradient);
   padding: 5px;
-  animation: spin-slow 20s linear infinite;
   box-shadow: var(--shadow-md);
 }
 
