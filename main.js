@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
-                
+
                 // If the element contains skill bars, animate them
                 const skillFills = entry.target.querySelectorAll('.skill-fill');
                 if (skillFills.length > 0) {
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function type() {
         const currentRole = roles[roleIndex];
-        
+
         if (isDeleting) {
             textElement.textContent = currentRole.substring(0, charIndex - 1);
             charIndex--;
@@ -152,32 +152,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     type();
 
+    /* ===== EMAILJS INIT ===== */
+    // Replace these three values after setting up EmailJS (see instructions below)
+    const EMAILJS_PUBLIC_KEY = 'Y98TXBcI1QT4ap7Se';   // step 1
+    const EMAILJS_SERVICE_ID = 'service_n5gl99r';   // step 2
+    const EMAILJS_TEMPLATE_ID = 'template_6mbpy55';  // step 3
+
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+
     /* ===== CONTACT FORM HANDLING ===== */
     const contactForm = document.getElementById('contactForm');
     const formStatus = document.getElementById('formStatus');
+    const submitBtn = document.getElementById('submitBtn');
 
     if (contactForm) {
         contactForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            
-            // Collect form data (for demo purposes we just log it)
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending…';
+
+            const templateParams = {
+                from_name: document.getElementById('name').value,
+                from_email: document.getElementById('email').value,
                 subject: document.getElementById('subject').value,
-                message: document.getElementById('message').value
+                message: document.getElementById('message').value,
+                to_email: 'kalvimohan03@gmail.com'
             };
-            
-            console.log('Form Submitted:', formData);
-            
-            // Show success message
-            formStatus.style.display = 'block';
-            contactForm.reset();
-            
-            // Hide message after 5 seconds
-            setTimeout(() => {
-                formStatus.style.display = 'none';
-            }, 5000);
+
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+                .then(() => {
+                    // Success
+                    formStatus.innerHTML = '✅ Message sent successfully! I\'ll reply soon. ✨';
+                    formStatus.style.color = '#22c55e';
+                    formStatus.style.display = 'block';
+                    contactForm.reset();
+                })
+                .catch((error) => {
+                    // Error
+                    console.error('EmailJS error:', error);
+                    formStatus.innerHTML = '❌ Something went wrong. Please try emailing me directly at <strong>kalvimohan03@gmail.com</strong>';
+                    formStatus.style.color = '#ef4444';
+                    formStatus.style.display = 'block';
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send Message';
+                    setTimeout(() => {
+                        formStatus.style.display = 'none';
+                    }, 7000);
+                });
         });
     }
 
@@ -186,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             if (href === '#') return;
-            
+
             e.preventDefault();
             const target = document.querySelector(href);
             if (target) {
